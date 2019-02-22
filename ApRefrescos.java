@@ -40,11 +40,12 @@ public class ApRefrescos{
 						System.out.println("Opción no valida");
 				}
 			} else if(op>=1 && op<=miStock.getMaxProductos()){
-				if(!miStock.despachar(op-1))
+				if(!miStock.despachar(op-1)){
 					System.out.println("\nProducto agotado\n");
-				else
-					miStock.cobrar(op-1);
-					
+				} else {
+					if (!miStock.cobrar(op-1))
+						System.out.println("\nOperación cancelada\n");
+				}
 					
 					
 			} else {
