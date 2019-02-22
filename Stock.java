@@ -59,56 +59,107 @@ public class Stock{
 		
 		int moneda,saldo,deuda;
 		
+		
 		saldo=0;
 		deuda=rieles[indice].getPrecio();
+		if(monedero[0].getCantidad()<marxMonedas || monedero[1].getCantidad()<marxMonedas || monedero[2].getCantidad()<marxMonedas || monedero[3].getCantidad()<marxMonedas){
+			do{
+				System.out.println("\nA pagar: "+(deuda-saldo));
+				System.out.println("\nSeleccione la moneda a ingresar.");
+				for(int i=0; i<tipoMonedas;i++){
+					System.out.print((i+1)+") "+monedero[i].getNombre()+"\t");
+				}
+				System.out.print("5)Cancelar\tOpción: ");
+				
+				moneda = leer.nextInt();
+				
+				switch(moneda){
+					case 1:
+						if(monedero[0].getCantidad()<=marxMonedas){
+							saldo+=monedero[0].getDenominacion();
+							monedero[0].setCantidad(monedero[0].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 2:
+						if(monedero[1].getCantidad()<=marxMonedas){
+							saldo+=monedero[1].getDenominacion();
+							monedero[1].setCantidad(monedero[1].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 3:
+						if(monedero[2].getCantidad()<=marxMonedas){
+							saldo+=monedero[2].getDenominacion();
+							monedero[2].setCantidad(monedero[2].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 4:
+						if(monedero[3].getCantidad()<=marxMonedas){
+							saldo+=monedero[3].getDenominacion();
+							monedero[3].setCantidad(monedero[3].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 5:
+						return false;
+					default:
+						System.out.println("Moneda no reconocida.");
+				}
+				
+			}while(saldo<deuda);
+		}else{
+			System.out.println("La maquina está llena.");
+		}
 		
-		do{
-			System.out.println("\nA pagar: "+(deuda-saldo));
-			System.out.println("\nSeleccione la moneda a ingresar.");
-			for(int i=0; i<tipoMonedas;i++){
-				System.out.print((i+1)+") "+monedero[i].getNombre()+"\t");
-			}
-			System.out.print("5)Cancelar\tOpción: ");
-			
-			moneda = leer.nextInt();
-			
-			switch(moneda){
-				case 1:
-					if(monedero[0].getCantidad()<=marxMonedas)
-						saldo+=monedero[0].getDenominacion();
-					else
-						System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
-					break;
-				case 2:
-					if(monedero[1].getCantidad()<=marxMonedas)
-						saldo+=monedero[1].getDenominacion();
-					else
-						System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
-					break;
-				case 3:
-					if(monedero[2].getCantidad()<=marxMonedas)
-						saldo+=monedero[2].getDenominacion();
-					else
-						System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
-					break;
-				case 4:
-					if(monedero[3].getCantidad()<=marxMonedas)
-						saldo+=monedero[3].getDenominacion();
-					else
-						System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
-					break;
-				case 5:
-					return false;
-				default:
-					System.out.println("Moneda no reconocida.");
-			}
-		}while(saldo<deuda);
+		saldo-=deuda;
 		
+		if(saldo>0)
+			darCambio(saldo);
 		return true;
 	}
 	
-	public void darCambio(int indice){
+	public void darCambio(int saldo){
+		int cambio[]={0,0,0,0};
+		System.out.println(saldo);
 		
+		do{
+			System.out.println(saldo);
+			if(monedero[0].getCantidad()>monedero[1].getCantidad() && monedero[0].getCantidad()>monedero[2].getCantidad() && monedero[0].getCantidad()>monedero[3].getCantidad()){
+				System.out.println("El más grande es 1");
+				if(saldo<monedero[0].getCantidad()){
+					System.out.println("Haciendo operaciones en 1");
+					saldo-=monedero[0].getDenominacion();
+					cambio[0]+=monedero[0].getDenominacion();
+					monedero[0].setCantidad(monedero[0].getCantidad()-1);
+				}
+			}
+			if(monedero[1].getCantidad()>monedero[0].getCantidad() && monedero[1].getCantidad()>monedero[2].getCantidad() && monedero[1].getCantidad()>monedero[3].getCantidad()){
+				System.out.println("El más grande es 2");
+				if(saldo<monedero[1].getCantidad()){
+					saldo-=monedero[1].getDenominacion();
+					cambio[1]+=monedero[1].getDenominacion();
+					monedero[1].setCantidad(monedero[1].getCantidad()-1);
+				}
+			}
+			if(monedero[2].getCantidad()>monedero[0].getCantidad() && monedero[2].getCantidad()>monedero[1].getCantidad() && monedero[2].getCantidad()>monedero[3].getCantidad()){
+				System.out.println("El más grande es 3");
+				if(saldo<monedero[2].getCantidad()){
+					saldo-=monedero[2].getDenominacion();
+					cambio[2]+=monedero[2].getDenominacion();
+					monedero[2].setCantidad(monedero[2].getCantidad()-1);
+				}
+			}
+			if(monedero[3].getCantidad()>monedero[0].getCantidad() && monedero[3].getCantidad()>monedero[1].getCantidad() && monedero[3].getCantidad()>monedero[2].getCantidad()){
+				System.out.println("El más grande es 4");
+				if(saldo<monedero[3].getCantidad()){
+					saldo-=monedero[3].getDenominacion();
+					cambio[3]+=monedero[3].getDenominacion();
+					monedero[3].setCantidad(monedero[3].getCantidad()-1);
+				}
+			}
+		}while(saldo>0);
 	}
 	
 	/*public boolean despachar(int indice){

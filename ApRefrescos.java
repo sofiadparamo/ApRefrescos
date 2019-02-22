@@ -42,8 +42,9 @@ public class ApRefrescos{
 			} else if(op>=1 && op<=miStock.getMaxProductos()){
 				if(!miStock.despachar(op-1))
 					System.out.println("\nProducto agotado\n");
-				else if(miStock.cobrar(op-1))
-					miStock.darCambio(op-1);
+				else
+					miStock.cobrar(op-1);
+					
 					
 					
 			} else {
