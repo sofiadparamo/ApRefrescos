@@ -93,6 +93,7 @@ public class Stock{
 						break;
 					case 5:
 						rieles[indice].setCant(rieles[indice].getCant()+1);
+						darCambio(saldo);
 						return false;
 					default:
 						System.out.println("Moneda no reconocida.");
