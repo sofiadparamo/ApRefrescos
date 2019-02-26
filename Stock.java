@@ -23,10 +23,10 @@ public class Stock{
 		rieles[6]=new Refresco("Coca sin azucar",10);
 		rieles[7]=new Refresco("Limon y nada   ",12);	
 
-		monedero[0]=new Dinero("Un Peso",1,20);
-		monedero[1]=new Dinero("Dos pesos",2,20);
-		monedero[2]=new Dinero("Cinco pesos",5,10);
-		monedero[3]=new Dinero("Diez pesos",10,0);
+		monedero[0]=new Dinero("Un Peso",1,0);
+		monedero[1]=new Dinero("Dos pesos",2,0);
+		monedero[2]=new Dinero("Cinco pesos",5,1);
+		monedero[3]=new Dinero("Diez pesos",10,50);
 		
 		for(int i=0; i<tipoMonedas;i++){
 		corte += monedero[i].getDenominacion()*monedero[i].getCantidad();
@@ -34,21 +34,13 @@ public class Stock{
 	}
 	
 	public boolean despachar(int indice){
-		/*if(credito>0){
-			if(cobrarCredito(indice)){
-				rieles[indice].setCant(rieles[indice].getCant()-1);
-				return true;
-			} else {
-				return false;
-			}
-		} else {*/
-			if(rieles[indice].getCant()>0){
-				rieles[indice].setCant(rieles[indice].getCant()-1);
-				return true;
-			} else {
-				return false;
-			}
-		//}
+		if(rieles[indice].getCant()>0){
+			rieles[indice].setCant(rieles[indice].getCant()-1);
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 	
 	public boolean consularEstado(){
@@ -249,14 +241,7 @@ public class Stock{
 	public boolean darCambio(int saldo){
 		int cambio[]={0,0,0,0};
 		
-		//System.out.println("Saldo a cambiar: "+saldo);
-		
 		do{
-			
-			/*System.out.println("Saldo a cambiar:"+saldo);
-			for(int i=0; i< tipoMonedas; i++){
-				System.out.println("["+monedero[i].getDenominacion()+"] "+monedero[i].getCantidad());
-			}*/
 			
 			if(saldo>=monedero[3].getDenominacion() && monedero[3].getCantidad()>0){
 				
@@ -292,7 +277,10 @@ public class Stock{
 			} else {
 				for(int i=0;i<tipoMonedas;i++)
 					monedero[i].setCantidad(monedero[i].getCantidad()+cambio[i]);
-				System.out.println("No hay cambio suficiente");
+				if(saldo>0)
+					System.out.println("No hay cambio suficiente");
+				else
+					System.out.println("Operación cancelada");
 				return false;
 			}
 			

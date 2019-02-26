@@ -1,6 +1,9 @@
 import java.util.Scanner;
 public class ApRefrescos{
-
+	
+	private static final int opcioncredito=9;
+	
+	
 	public static void main(String[] args){
 		int op,op1;
 		boolean salir=false;
@@ -94,29 +97,8 @@ public class ApRefrescos{
 						} else {
 							System.out.println("\nProducto agotado\n");
 						}
-					}
-					
-					/*if(!miStock.despachar(op-1)){
-						if(!(op-1==8))
-							if(miStock.getCredito()==0)
-								System.out.println("\nProducto agotado\n");
-							else
-								System.out.println("\nCredito insuficiente\n");
-						
-					} else if(miStock.getCredito()==0){
-						if (!miStock.cobrar(op-1))
-							System.out.println("\nOperación cancelada\n");
-						else
-							System.out.println("\nOperación exitosa sin credito\n");
-					} else if(miStock.getCredito()>0){
-						if(!miStock.cobrarCredito(op-1))
-							System.out.println("\nError al cobrar con credito\n");
-						else
-							System.out.println("\nOperación exitosa 2\n");
-					}*/
-						
-						
-				} else if(op==9) { 
+					}				
+				} else if(op==opcioncredito) { 
 					miStock.credito();
 				} else {
 					System.out.println("\nProducto no existente\n");
