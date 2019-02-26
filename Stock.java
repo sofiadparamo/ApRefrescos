@@ -23,10 +23,10 @@ public class Stock{
 		rieles[6]=new Refresco("Coca sin azucar",10);
 		rieles[7]=new Refresco("Limon y nada   ",12);	
 
-		monedero[0]=new Dinero("Un Peso",1,0);
-		monedero[1]=new Dinero("Dos pesos",2,0);
-		monedero[2]=new Dinero("Cinco pesos",5,1);
-		monedero[3]=new Dinero("Diez pesos",10,5);
+		monedero[0]=new Dinero("Un Peso",1,20);
+		monedero[1]=new Dinero("Dos pesos",2,20);
+		monedero[2]=new Dinero("Cinco pesos",5,10);
+		monedero[3]=new Dinero("Diez pesos",10,0);
 		
 		for(int i=0; i<tipoMonedas;i++){
 		corte += monedero[i].getDenominacion()*monedero[i].getCantidad();
@@ -34,32 +34,50 @@ public class Stock{
 	}
 	
 	public boolean despachar(int indice){
-		if(indice==8){
-			credito();
-			return false;
-		} else {
-			if(credito>0){
-				if(cobrarCredito(indice)){
-					rieles[indice].setCant(rieles[indice].getCant()-1);
-					return true;
-				} else {
-					return false;
-				}
+		/*if(credito>0){
+			if(cobrarCredito(indice)){
+				rieles[indice].setCant(rieles[indice].getCant()-1);
+				return true;
 			} else {
-				if(rieles[indice].getCant()>0){
-					rieles[indice].setCant(rieles[indice].getCant()-1);
-					return true;
-				} else {
-					return false;
-				}
+				return false;
 			}
+		} else {*/
+			if(rieles[indice].getCant()>0){
+				rieles[indice].setCant(rieles[indice].getCant()-1);
+				return true;
+			} else {
+				return false;
+			}
+		//}
+	}
+	
+	public boolean consularEstado(){
+		int reftot=0;
+		int montot=0;
+		
+		for(int i = 0; i < maxProductos; i++){
+			reftot+=rieles[i].getCant();
 		}
+		
+		for(int i = 0; i < tipoMonedas; i++){
+			montot+=monedero[i].getCantidad();
+		}
+		
+		if(reftot == 0){
+			return false;
+		}
+		
+		if(montot == marxMonedas*tipoMonedas){
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public void credito(){
 		Scanner leer = new Scanner(System.in);
 		
-		int moneda;
+		int moneda,retiraropc;
 		boolean listo=false;
 		
 		
@@ -80,28 +98,28 @@ public class Stock{
 							credito+=monedero[0].getDenominacion();
 							monedero[0].setCantidad(monedero[0].getCantidad()+1);
 						} else
-							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+							System.out.println("Monedero lleno, pruebe con otra moneda, cancele la operación o salga del menú.");
 						break;
 					case 2:
 						if(monedero[1].getCantidad()<marxMonedas){
 							credito+=monedero[1].getDenominacion();
 							monedero[1].setCantidad(monedero[1].getCantidad()+1);
 						} else
-							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+							System.out.println("Monedero lleno, pruebe con otra moneda, cancele la operación o salga del menú.");
 						break;
 					case 3:
 						if(monedero[2].getCantidad()<marxMonedas){
 							credito+=monedero[2].getDenominacion();
 							monedero[2].setCantidad(monedero[2].getCantidad()+1);
 						} else
-							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+							System.out.println("Monedero lleno, pruebe con otra moneda, cancele la operación o salga del menú.");
 						break;
 					case 4:
 						if(monedero[3].getCantidad()<marxMonedas){
 							credito+=monedero[3].getDenominacion();
 							monedero[3].setCantidad(monedero[3].getCantidad()+1);
 						} else
-							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+							System.out.println("Monedero lleno, pruebe con otra moneda, cancele la operación o salga del menú.");
 						break;
 					case 5:
 						if(darCambio(credito))
@@ -116,21 +134,36 @@ public class Stock{
 				
 			}while(!listo);
 		}else{
-			System.out.println("La maquina está llena.");
+			if(credito>0){
+				System.out.println("La maquina está llena. ¿Deseas retirar todo tu dinero?");
+				System.out.println("1) Sí\t2) No");
+				retiraropc = leer.nextInt();
+				if(retiraropc==1){
+					if(darCambio(credito))
+						credito=0;
+				}
+				retiraropc=0;
+			} else {
+				System.out.println("La maquina está llena.");
+			}
 		}
 
 	}
 	
 	public boolean cobrarCredito(int indice){
 		int sobrante=0,deuda;
+		
 		deuda=rieles[indice].getPrecio();
 		sobrante=credito-deuda;
+		
+		System.out.println(sobrante+", "+deuda);
 		if(sobrante>0){
 			credito-=deuda;
 			return true;
-		} else 
+		} else { 
+			rieles[indice].setCant(rieles[indice].getCant()+1);
 			return false;
-			
+		}
 		
 	}
 	
@@ -193,6 +226,8 @@ public class Stock{
 			}while(saldo<deuda);
 		}else{
 			System.out.println("La maquina está llena.");
+			rieles[indice].setCant(rieles[indice].getCant()+1);
+			return false;
 		}
 		
 		saldoAux=saldo;
@@ -214,14 +249,14 @@ public class Stock{
 	public boolean darCambio(int saldo){
 		int cambio[]={0,0,0,0};
 		
-		System.out.println("Saldo a cambiar: "+saldo);
+		//System.out.println("Saldo a cambiar: "+saldo);
 		
 		do{
 			
-			System.out.println("Saldo a cambiar:"+saldo);
+			/*System.out.println("Saldo a cambiar:"+saldo);
 			for(int i=0; i< tipoMonedas; i++){
 				System.out.println("["+monedero[i].getDenominacion()+"] "+monedero[i].getCantidad());
-			}
+			}*/
 			
 			if(saldo>=monedero[3].getDenominacion() && monedero[3].getCantidad()>0){
 				
