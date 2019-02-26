@@ -10,8 +10,6 @@ public class Stock{
 	private int tipoMonedas=4;
 	private Refresco rieles[]=new Refresco[maxProductos];
 	private Dinero monedero[]=new Dinero[tipoMonedas];
-	private Dinero ranura[]=new Dinero[tipoMonedas];
-	private Dinero cambioBandeja[]=new Dinero[tipoMonedas];
 	
 	public Stock(){
 		rieles[0]=new Refresco("Coca Cola      ",13);
