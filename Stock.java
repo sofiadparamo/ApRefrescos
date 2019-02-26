@@ -6,6 +6,7 @@ public class Stock{
 	private int capacidadRiel=10;
 	private int marxMonedas=50;
 	private int corte;
+	private int credito;
 	private int tipoMonedas=4;
 	private Refresco rieles[]=new Refresco[maxProductos];
 	private Dinero monedero[]=new Dinero[tipoMonedas];
@@ -24,7 +25,7 @@ public class Stock{
 
 		monedero[0]=new Dinero("Un Peso",1,0);
 		monedero[1]=new Dinero("Dos pesos",2,0);
-		monedero[2]=new Dinero("Cinco pesos",5,0);
+		monedero[2]=new Dinero("Cinco pesos",5,1);
 		monedero[3]=new Dinero("Diez pesos",10,5);
 		
 		for(int i=0; i<tipoMonedas;i++){
@@ -33,13 +34,103 @@ public class Stock{
 	}
 	
 	public boolean despachar(int indice){
-		
-		if(rieles[indice].getCant()>0){
-			rieles[indice].setCant(rieles[indice].getCant()-1);
-			return true;
-		} else {
+		if(indice==8){
+			credito();
 			return false;
+		} else {
+			if(credito>0){
+				if(cobrarCredito(indice)){
+					rieles[indice].setCant(rieles[indice].getCant()-1);
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if(rieles[indice].getCant()>0){
+					rieles[indice].setCant(rieles[indice].getCant()-1);
+					return true;
+				} else {
+					return false;
+				}
+			}
 		}
+	}
+	
+	public void credito(){
+		Scanner leer = new Scanner(System.in);
+		
+		int moneda;
+		boolean listo=false;
+		
+		
+		if(monedero[0].getCantidad()<marxMonedas || monedero[1].getCantidad()<marxMonedas || monedero[2].getCantidad()<marxMonedas || monedero[3].getCantidad()<marxMonedas){
+			do{
+				System.out.println("\nCredito: "+credito);
+				System.out.println("\nSeleccione la moneda a ingresar.");
+				for(int i=0; i<tipoMonedas;i++){
+					System.out.print((i+1)+") "+monedero[i].getNombre()+"\t");
+				}
+				System.out.print("5)Cancelar\t6)Salir\tOpción: ");
+				
+				moneda = leer.nextInt();
+				
+				switch(moneda){
+					case 1:
+						if(monedero[0].getCantidad()<marxMonedas){
+							credito+=monedero[0].getDenominacion();
+							monedero[0].setCantidad(monedero[0].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 2:
+						if(monedero[1].getCantidad()<marxMonedas){
+							credito+=monedero[1].getDenominacion();
+							monedero[1].setCantidad(monedero[1].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 3:
+						if(monedero[2].getCantidad()<marxMonedas){
+							credito+=monedero[2].getDenominacion();
+							monedero[2].setCantidad(monedero[2].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 4:
+						if(monedero[3].getCantidad()<marxMonedas){
+							credito+=monedero[3].getDenominacion();
+							monedero[3].setCantidad(monedero[3].getCantidad()+1);
+						} else
+							System.out.println("Monedero lleno, pruebe con otra moneda o cancele la operación.");
+						break;
+					case 5:
+						if(darCambio(credito))
+							credito=0;
+						break;
+					case 6:
+					listo=true;
+						break;
+					default:
+						System.out.println("Moneda no reconocida.");
+				}
+				
+			}while(!listo);
+		}else{
+			System.out.println("La maquina está llena.");
+		}
+
+	}
+	
+	public boolean cobrarCredito(int indice){
+		int sobrante=0,deuda;
+		deuda=rieles[indice].getPrecio();
+		sobrante=credito-deuda;
+		if(sobrante>0){
+			credito-=deuda;
+			return true;
+		} else 
+			return false;
+			
 		
 	}
 	
@@ -123,14 +214,14 @@ public class Stock{
 	public boolean darCambio(int saldo){
 		int cambio[]={0,0,0,0};
 		
-		//System.out.println("Saldo a cambiar: "+saldo);
+		System.out.println("Saldo a cambiar: "+saldo);
 		
 		do{
 			
-			/*System.out.println("Saldo a cambiar:"+saldo);
+			System.out.println("Saldo a cambiar:"+saldo);
 			for(int i=0; i< tipoMonedas; i++){
 				System.out.println("["+monedero[i].getDenominacion()+"] "+monedero[i].getCantidad());
-			}*/
+			}
 			
 			if(saldo>=monedero[3].getDenominacion() && monedero[3].getCantidad()>0){
 				
@@ -173,7 +264,7 @@ public class Stock{
 			
 		}while(saldo>0);
 		System.out.println("Su cambio es:");
-				for(int i=0;i<4;i++){
+				for(int i=0;i<tipoMonedas;i++){
 					System.out.println((i+1)+")"+monedero[i].getNombre()+": "+cambio[i]+"\t");
 				}
 		return true;
@@ -188,6 +279,7 @@ public class Stock{
 		System.out.println("\n");
 		for(int i=0;i<maxProductos;i++)
 			System.out.println((i+1)+")"+rieles[i].getNombre()+" $"+rieles[i].getPrecio());
+		System.out.println("9)Credito         $"+credito);
 	}
 	
 	public void mostrarStock(){
@@ -212,6 +304,10 @@ public class Stock{
 	
 	public int getMaxProductos(){
 		return maxProductos;
+	}
+	
+	public int getCredito(){
+		return credito;
 	}
 	
 	public void setMaxProductos(int maxProductos){

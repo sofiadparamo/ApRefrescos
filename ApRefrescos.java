@@ -39,12 +39,20 @@ public class ApRefrescos{
 					default:
 						System.out.println("Opción no valida");
 				}
-			} else if(op>=1 && op<=miStock.getMaxProductos()){
+			} else if(op>=1 && op<=miStock.getMaxProductos()+1){
 				if(!miStock.despachar(op-1)){
-					System.out.println("\nProducto agotado\n");
-				} else {
+					if(!(op-1==8))
+						if(miStock.getCredito()==0)
+							System.out.println("\nProducto agotado\n");
+						else
+							System.out.println("\nCredito insuficiente\n");
+					
+				} else if(miStock.getCredito()==0){
 					if (!miStock.cobrar(op-1))
 						System.out.println("\nOperación cancelada\n");
+				} else if(miStock.getCredito()>0){
+					if(!miStock.cobrarCredito(op-1))
+						System.out.println("\nCredito insuficiente\n");
 				}
 					
 					
