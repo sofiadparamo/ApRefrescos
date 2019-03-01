@@ -8,9 +8,11 @@ public class ApRefrescos{
 		int op,op1;
 		boolean salir=false;
 		Scanner leer=new Scanner(System.in);
-		Stock miStock;
+		//EJEMPLO DE SOBRECARGA DE CONSTRUCTOR
+		Stock miStock,miStockVacio;
 		miStock=new Stock();
 		miStock.llenarRieles(); 
+		miStockVacio= new Stock(8,10,50,4);
 	
 		do
 		{	
@@ -18,7 +20,7 @@ public class ApRefrescos{
 				System.out.println("Maquina fuera de servicio");
 				op=leer.nextInt();
 				if(op==25565){
-					System.out.println("\n\tSeleccione opción\n\t1.-Mostrar stock\n\t2.-Rellenar stock\n\t3.-Mostrar monedas\n\t4.-Apagar maquina");
+					System.out.println("\n\tSeleccione opción\n\t1.-Mostrar stock\n\t2.-Rellenar stock\n\t3.-Mostrar monedas\n\t4.-Modo debug\n\t5.-Configuración inicial\n\t6.-Apagar maquina");
 					System.out.print("Opción: ");
 					op1=leer.nextInt();
 					System.out.println();
@@ -36,6 +38,10 @@ public class ApRefrescos{
 							System.out.println("Regresando al menú principal...\n");
 							break;
 						case 4:
+							if(!miStock.getDebugProfile())miStock.setDebugProfile(true);
+							else miStock.setDebugProfile(false);
+							break;
+						case 6:
 							salir=true;
 							System.out.println("Apagando maquina");
 							break;
@@ -48,7 +54,7 @@ public class ApRefrescos{
 				System.out.print("Producto: ");
 				op=leer.nextInt();
 				if(op==25565){
-					System.out.println("\n\tSeleccione opción\n\t1.-Mostrar stock\n\t2.-Rellenar stock\n\t3.-Mostrar monedas\n\t4.-Apagar maquina");
+					System.out.println("\n\tSeleccione opción\n\t1.-Mostrar stock\n\t2.-Rellenar stock\n\t3.-Mostrar monedas\n\t4.-Modo debug\n\t5.-Configuración inicial\n\t6.-Apagar maquina");
 					System.out.print("Opción: ");
 					op1=leer.nextInt();
 					System.out.println();
@@ -66,6 +72,10 @@ public class ApRefrescos{
 							System.out.println("Regresando al menú principal...\n");
 							break;
 						case 4:
+							if(!miStock.getDebugProfile())miStock.setDebugProfile(true);
+							else miStock.setDebugProfile(false);
+							break;
+						case 6:
 							salir=true;
 							System.out.println("Apagando maquina");
 							break;
@@ -79,8 +89,10 @@ public class ApRefrescos{
 						//Usando credito
 						
 						if(miStock.despachar(op-1)){
-							if(!miStock.cobrarCredito(op-1)){
+							if(!miStock.usarCredito(op-1)){
 								System.out.println("\nCredito insuficiente\n");
+							} else {
+								System.out.println("\nSe ha despachado correctamente 1 "+miStock.getNombreRefresco(op-1));
 							}
 						} else {
 							System.out.println("\nProducto agotado\n");
@@ -99,7 +111,7 @@ public class ApRefrescos{
 						}
 					}				
 				} else if(op==opcioncredito) { 
-					miStock.credito();
+					miStock.cobrar(false);
 				} else {
 					System.out.println("\nProducto no existente\n");
 				}

@@ -10,6 +10,7 @@ public class Stock{
 	private int tipoMonedas=4;
 	private Refresco rieles[]=new Refresco[maxProductos];
 	private Dinero monedero[]=new Dinero[tipoMonedas];
+	private boolean debugProfile=false;
 	
 	public Stock(){
 		rieles[0]=new Refresco("Coca Cola      ",13);
@@ -21,21 +22,31 @@ public class Stock{
 		rieles[6]=new Refresco("Coca sin azucar",10);
 		rieles[7]=new Refresco("Limon y nada   ",12);	
 
-		monedero[0]=new Dinero("Un Peso",1,0);
-		monedero[1]=new Dinero("Dos pesos",2,0);
-		monedero[2]=new Dinero("Cinco pesos",5,1);
-		monedero[3]=new Dinero("Diez pesos",10,50);
+		monedero[0]=new Dinero("Un Peso",1,30);
+		monedero[1]=new Dinero("Dos pesos",2,20);
+		monedero[2]=new Dinero("Cinco pesos",5,10);
+		monedero[3]=new Dinero("Diez pesos",10,0);
 		
 		for(int i=0; i<tipoMonedas;i++){
 		corte += monedero[i].getDenominacion()*monedero[i].getCantidad();
 		}
 	}
+	//EJEMPLO DE SOBRECARGA DE CONSTRUCTOR
+	public Stock(int maxProductos, int capacidadRiel, int marxMonedas, int tipoMonedas){
+		this.maxProductos=maxProductos;
+		this.capacidadRiel=capacidadRiel;
+		this.marxMonedas=marxMonedas;
+		this.tipoMonedas=tipoMonedas;
+	}
 	
 	public boolean despachar(int indice){
+		if(debugProfile)System.out.println("[Despachar] "+rieles[indice].getCant());
 		if(rieles[indice].getCant()>0){
 			rieles[indice].setCant(rieles[indice].getCant()-1);
+			if(debugProfile)System.out.println("[Despachar] Restado");
 			return true;
 		} else {
+			if(debugProfile)System.out.println("[Despachar] Falló");
 			return false;
 		}
 
@@ -48,27 +59,28 @@ public class Stock{
 		for(int i = 0; i < maxProductos; i++){
 			reftot+=rieles[i].getCant();
 		}
-		
+		if(debugProfile)System.out.println("[Consultar Estado] "+reftot);
 		for(int i = 0; i < tipoMonedas; i++){
 			montot+=monedero[i].getCantidad();
 		}
-		
-		if(reftot == 0){
+		if(debugProfile)System.out.println("[Consultar Estado] "+montot);
+		if(reftot == 0 &&credito<1){
+			if(debugProfile)System.out.println("[Consultar Estado] Falló");
 			return false;
 		}
 		
-		if(montot == marxMonedas*tipoMonedas){
+		if(montot == marxMonedas*tipoMonedas && credito<1){
+			if(debugProfile)System.out.println("[Consultar Estado] Falló");
 			return false;
 		}
-		
+		if(debugProfile)System.out.println("[Consultar Estado] Exito");
 		return true;
 	}
 	
-	public void credito(){
+	public void cobrar(boolean listo){
 		Scanner leer = new Scanner(System.in);
 		
 		int moneda,retiraropc;
-		boolean listo=false;
 		
 		
 		if(monedero[0].getCantidad()<marxMonedas || monedero[1].getCantidad()<marxMonedas || monedero[2].getCantidad()<marxMonedas || monedero[3].getCantidad()<marxMonedas){
@@ -77,6 +89,7 @@ public class Stock{
 				System.out.println("\nSeleccione la moneda a ingresar.");
 				for(int i=0; i<tipoMonedas;i++){
 					System.out.print((i+1)+") "+monedero[i].getNombre()+"\t");
+					if(debugProfile)System.out.print(monedero[i].getCantidad()+"\t");
 				}
 				System.out.print("5)Cancelar\t6)Salir\tOpción: ");
 				
@@ -129,8 +142,11 @@ public class Stock{
 				System.out.println("1) Sí\t2) No");
 				retiraropc = leer.nextInt();
 				if(retiraropc==1){
-					if(darCambio(credito))
+					if(debugProfile)System.out.println("[Cobrar](SB) Retiro");
+					if(darCambio(credito)){
+						if(debugProfile)System.out.println("[Cobrar](SB) Exito, credito 0");
 						credito=0;
+					}
 				}
 				retiraropc=0;
 			} else {
@@ -140,17 +156,19 @@ public class Stock{
 
 	}
 	
-	public boolean cobrarCredito(int indice){
+	public boolean usarCredito(int indice){
 		int sobrante=0,deuda;
 		
 		deuda=rieles[indice].getPrecio();
 		sobrante=credito-deuda;
 		
-		System.out.println(sobrante+", "+deuda);
-		if(sobrante>0){
+		
+		if(sobrante>=0){
+			if(debugProfile)System.out.println("[Usar Credito] Exito");
 			credito-=deuda;
 			return true;
 		} else { 
+			if(debugProfile)System.out.println("[Usar Credito] Falló");
 			rieles[indice].setCant(rieles[indice].getCant()+1);
 			return false;
 		}
@@ -171,9 +189,10 @@ public class Stock{
 				System.out.println("\nSeleccione la moneda a ingresar.");
 				for(int i=0; i<tipoMonedas;i++){
 					System.out.print((i+1)+") "+monedero[i].getNombre()+"\t");
+					System.out.print(monedero[i].getCantidad()+"\t");
 				}
 				System.out.print("5)Cancelar\tOpción: ");
-				
+				if(debugProfile)System.out.println("[Cobrar] ");
 				moneda = leer.nextInt();
 				
 				switch(moneda){
@@ -240,6 +259,8 @@ public class Stock{
 		int cambio[]={0,0,0,0};
 		
 		do{
+			
+			if(debugProfile)System.out.println("[Cambio] "+cambio[0]+"\t"+cambio[1]+"\t"+cambio[2]+"\t"+cambio[3]+"\t"+saldo);
 			
 			if(saldo>=monedero[3].getDenominacion() && monedero[3].getCantidad()>0){
 				
@@ -331,10 +352,21 @@ public class Stock{
 		return credito;
 	}
 	
+	public String getNombreRefresco(int indice){
+		return rieles[indice].getNombre();
+	}
+	
 	public void setMaxProductos(int maxProductos){
 		this.maxProductos=maxProductos;
 	}
 	
+	public void setDebugProfile(boolean debugProfile){
+		this.debugProfile=debugProfile;
+	}
+	
+	public boolean getDebugProfile(){
+		return debugProfile;
+	}
 }
 
 
